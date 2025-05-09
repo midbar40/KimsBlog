@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+      "target": "ES6",
+      "moduleResolution": "Node",
+      "module": "ESNext",
+      "jsx": "react-jsx",
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true,
+      "baseUrl": "./src",
+      "paths": {
+        "@components/*": ["components/*"],
+        "@lib/*": ["lib/*"],
+        "@utils/*": ["lib/utils/*"],
+        "@hooks/*": ["hooks/*"]
+      }
+    },
+    "include": ["src"],
+    "exclude": ["node_modules"],
+
+  }
