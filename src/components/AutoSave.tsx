@@ -22,7 +22,7 @@ const AutoSave = ({ post, isPublishing }: AutoSaveProp) => { //  content를 prop
                 headers: { "Content-Type": "application/json" },
                 data: post
             })
-                .then(response => console.log("✅ 자동 저장됨:", response.data))
+                .then(response => console.log("✅ 자동 저장됨:", response.data) )// 여기에 자동저장 되었을 때 나오는 알림 반응 추가 필요
                 .catch(error => console.error("❌ 저장 오류:", error));
         }, 3000); // 3초 동안 입력이 없으면 저장
 

@@ -13,7 +13,8 @@ import {
     DialogTrigger,
 } from "@components/ui/dialog"
 import AutoSave from "./AutoSave";
-
+import DraftLoader from "./DraftLoader";
+import { useNavigate } from "react-router";
 
 interface Post {
     title: string,
@@ -21,6 +22,7 @@ interface Post {
 }
 
 const MarkdownEditor = () => {
+    let navigate = useNavigate()
     const [post, setPost] = useState<Post>({
         title: '',
         content: ''
@@ -43,19 +45,20 @@ const MarkdownEditor = () => {
         return DOMPurify.sanitize(html);
     };
     // 글 발행하기
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         const action = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement;
 
         try {
             if (action.name === 'publish') {
                 console.log("📢 게시글을 발행합니다!");
-                axios("http://localhost:8080/api/posts", {
+                const response = await axios("http://localhost:8080/api/posts", {
                     method: "post",
                     headers: { "Content-Type": "application/json" },
                     data: post
                 })
                 setIsPublishing(true)
+                navigate(`/posts/${response.data.id}`)
             } else if (action.name === 'draft') {
                 console.log("💾 게시글을 임시 저장합니다!");
                 axios("http://localhost:8080/api/temp-posts", {
@@ -64,7 +67,6 @@ const MarkdownEditor = () => {
                     data: post
                 })
             }
-
         } catch (error) {
             console.log('글 발행에러:', error)
         }
@@ -177,6 +179,7 @@ const MarkdownEditor = () => {
                     </div>
                 </div>
             </div>
+            <DraftLoader onLoadDraft={(draft:Post) => setPost(draft)} /> {/* ✅ 임시 저장 불러오기 */}
             <AutoSave post={post} isPublishing={isPublishing}/>
         </>
     );
