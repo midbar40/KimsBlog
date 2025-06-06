@@ -12,23 +12,45 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@components/ui/dialog"
+import {
+    AlertDialog,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogTitle,
+} from "@components/ui/alert-dialog"
 import AutoSave from "./AutoSave";
 import DraftLoader from "./DraftLoader";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 interface Post {
     title: string,
     content: string
 }
 
-const MarkdownEditor = () => {
+interface MarkdownEditorProps {
+    mode: 'create' | 'edit';
+    postId?: number;
+}
+
+const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
+    const { id } = useParams();
+    const postId = id ? parseInt(id, 10) : undefined;
+    console.log('postId', postId)
     let navigate = useNavigate()
     const [post, setPost] = useState<Post>({
         title: '',
         content: ''
     })
-   const [isPublishing, setIsPublishing] = useState(false); // ✅ 발행 중 여부
+    const [isPublishing, setIsPublishing] = useState(false); // ✅ 발행 중 여부
+    const [open, setOpen] = useState(false);
+    const [warningText, setWarningText] = useState("");
 
+    const showWarning = (text: string) => {
+        setWarningText(text);
+        setOpen(true);
+    };
 
     const handlePostContent = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target
@@ -38,12 +60,30 @@ const MarkdownEditor = () => {
         }))
     }
 
-
-
     // HTML sanitization을 위한 함수
     const sanitizeHTML = (html: string) => {
         return DOMPurify.sanitize(html);
     };
+
+    // edit mode로 들어왔을 때 해당 게시글 정보를 서버에서 가져온다
+    useEffect(() => {
+        console.log('여기 들어오나요?1', mode, postId)
+        if (mode === 'edit' && postId) {
+            console.log('여기 들어오나요?2')
+            axios.get(`http://localhost:8080/api/posts/${postId}`)
+                .then(response => {
+                    console.log('response체크', response)
+                    setPost({
+                        title: response.data?.title,
+                        content: response.data?.content
+                    })
+                })
+                .catch(error => console.log("[editPost] 게시글 불러오기 실패"))
+        }
+    }, [mode])
+
+
+
     // 글 발행하기
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -51,6 +91,15 @@ const MarkdownEditor = () => {
 
         try {
             if (action.name === 'publish') {
+                if (post.title.trim() === "") {
+                    showWarning("제목을 작성해주세요");
+                    return;
+                }
+                if (post.content.trim() === "") {
+                    showWarning("내용을 작성해주세요");
+                    return;
+                }
+
                 console.log("📢 게시글을 발행합니다!");
                 const response = await axios("http://localhost:8080/api/posts", {
                     method: "post",
@@ -60,12 +109,33 @@ const MarkdownEditor = () => {
                 setIsPublishing(true)
                 navigate(`/posts/${response.data.id}`)
             } else if (action.name === 'draft') {
+                if (post.title.trim() === "" && post.content.trim() === "") {
+                    showWarning("제목 혹은 내용을 작성해주세요");
+                    return;
+                }
                 console.log("💾 게시글을 임시 저장합니다!");
+                const postWithId = { ...post, id: 1 }; // ID 명시
                 axios("http://localhost:8080/api/temp-posts", {
-                    method: "post",
+                    method: "put",
+                    headers: { "Content-Type": "application/json" },
+                    data: postWithId
+                })
+            } else if (action.name === 'edit') {
+                if (post.title.trim() === "" && post.content.trim() === "") {
+                    showWarning("제목 혹은 내용을 작성해주세요");
+                    return;
+                }
+                console.log("게시글 수정 완료");
+                axios(`http://localhost:8080/api/posts/${postId}`, {
+                    method: "put",
                     headers: { "Content-Type": "application/json" },
                     data: post
                 })
+                    .then(response => {
+                        console.log("✅ 수정완료:", response.data)
+                        navigate(`/posts/${postId}`)
+                    })
+                    .catch(error => console.error("❌ 수정오류:", error))
             }
         } catch (error) {
             console.log('글 발행에러:', error)
@@ -153,8 +223,17 @@ const MarkdownEditor = () => {
                             </DialogContent>
                         </Dialog>
                         <form onSubmit={handleSubmit}>
-                            <Button type="submit" name="draft" variant="outline" className="cursor-pointer mr-3">임시저장</Button>
-                            <Button type="submit" name="publish" className="cursor-pointer mr-3">발행하기</Button>
+                            {mode === 'create' && (
+                                <>
+                                    <Button type="submit" name="draft" variant="outline" className="cursor-pointer mr-3">임시저장</Button>
+                                    <Button type="submit" name="publish" className="cursor-pointer mr-3">발행하기</Button>
+                                </>
+                            )}
+                            {mode === 'edit' && (
+                                <>
+                                    <Button type="submit" name="edit" variant="outline" className="cursor-pointer mr-3">수정완료</Button>
+                                </>
+                            )}
                         </form>
                     </div>
                 </div>
@@ -179,9 +258,27 @@ const MarkdownEditor = () => {
                     </div>
                 </div>
             </div>
-            <DraftLoader onLoadDraft={(draft:Post) => setPost(draft)} /> {/* ✅ 임시 저장 불러오기 */}
-            <AutoSave post={post} isPublishing={isPublishing}/>
+            {mode === 'create' && (
+                <>
+                    <DraftLoader onLoadDraft={(draft) => setPost(draft)} /> {/* ✅ 임시 저장 불러오기 */}
+                    <AutoSave post={post} isPublishing={isPublishing} />
+                </>
+            )}
+            <>
+                <AlertDialog open={open} onOpenChange={setOpen}>
+                    <AlertDialogContent>
+                        <AlertDialogTitle></AlertDialogTitle>
+                        <AlertDialogDescription>
+                            {warningText}
+                        </AlertDialogDescription>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>닫기</AlertDialogCancel>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </>
         </>
+
     );
 };
 

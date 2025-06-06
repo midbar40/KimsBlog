@@ -1,4 +1,4 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
+import { FileTerminal, Home, NotebookTabs, Database, SquarePen} from "lucide-react"
 import { Link } from "react-router-dom"
 import {
   Sidebar,
@@ -21,22 +21,22 @@ const items = [
   {
     title: "글목록",
     url: "/posts",
-    icon: Inbox,
+    icon: NotebookTabs,
   },
   {
     title: "CLI",
     url: "#",
-    icon: Calendar,
+    icon: FileTerminal,
   },
   {
     title: "SQL",
     url: "#",
-    icon: Search,
+    icon: Database,
   },
   {
     title: "글쓰기",
     url: "posts/edit",
-    icon: Settings,
+    icon: SquarePen,
   },
 ]
 

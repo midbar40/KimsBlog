@@ -17,10 +17,11 @@ const AutoSave = ({ post, isPublishing }: AutoSaveProp) => { //  content를 prop
         if (isPublishing || (!post.title.trim() && !post.content.trim())) return; // 빈 값이면 저장하지 않음
 
         const timeoutId = setTimeout(() => {
+            const postWithId = { ...post, id: 1 }; // ID 명시
             axios("http://localhost:8080/api/temp-posts", {
-                method: "post",
+                method: "put",
                 headers: { "Content-Type": "application/json" },
-                data: post
+                data: postWithId
             })
                 .then(response => console.log("✅ 자동 저장됨:", response.data) )// 여기에 자동저장 되었을 때 나오는 알림 반응 추가 필요
                 .catch(error => console.error("❌ 저장 오류:", error));
