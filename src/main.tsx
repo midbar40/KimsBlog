@@ -1,16 +1,14 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom';
-import './global.css'
-import App from './App.js'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { RouterProvider } from 'react-router-dom';
+import { router } from './router'; // createBrowserRouter 정의한 곳
+import './global.css';
 
-const rootElement = document.getElementById('root')
+const rootElement = document.getElementById('root');
 if (rootElement) {
   createRoot(rootElement).render(
-    <BrowserRouter>
-      <StrictMode>
-        <App />
-      </StrictMode>
-    </BrowserRouter>
-  )
-} 
+    <StrictMode>
+      <RouterProvider router={router} />
+    </StrictMode>
+  );
+}

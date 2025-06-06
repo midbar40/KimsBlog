@@ -22,7 +22,8 @@ import {
 } from "@components/ui/alert-dialog"
 import AutoSave from "./AutoSave";
 import DraftLoader from "./DraftLoader";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams, useBlocker, useBeforeUnload } from "react-router";
+import useNavigationGuard from "./useNavigationGuard";
 
 interface Post {
     title: string,
@@ -37,7 +38,6 @@ interface MarkdownEditorProps {
 const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
     const { id } = useParams();
     const postId = id ? parseInt(id, 10) : undefined;
-    console.log('postId', postId)
     let navigate = useNavigate()
     const [post, setPost] = useState<Post>({
         title: '',
@@ -46,6 +46,15 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
     const [isPublishing, setIsPublishing] = useState(false); // ✅ 발행 중 여부
     const [open, setOpen] = useState(false);
     const [warningText, setWarningText] = useState("");
+    const [isEditing, setIsEditing] = useState(false);
+    const blocker = useBlocker(() => isEditing);
+
+    // 글 작성중 이탈 감지하여 경고하기
+    // useBlocker + beforeunload  
+    useNavigationGuard(
+        post.title.trim() !== '' || post.content.trim() !== '',
+        '변경사항이 저장되지 않았습니다. 정말 떠나시겠습니까?'
+    );
 
     const showWarning = (text: string) => {
         setWarningText(text);
@@ -60,6 +69,9 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
         }))
     }
 
+    // 작성 중 내용 화면 이탈시 경고 함수
+
+
     // HTML sanitization을 위한 함수
     const sanitizeHTML = (html: string) => {
         return DOMPurify.sanitize(html);
@@ -67,9 +79,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
 
     // edit mode로 들어왔을 때 해당 게시글 정보를 서버에서 가져온다
     useEffect(() => {
-        console.log('여기 들어오나요?1', mode, postId)
         if (mode === 'edit' && postId) {
-            console.log('여기 들어오나요?2')
             axios.get(`http://localhost:8080/api/posts/${postId}`)
                 .then(response => {
                     console.log('response체크', response)
@@ -82,7 +92,12 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
         }
     }, [mode])
 
-
+    // mode가 바뀔 때 post 초기화
+    useEffect(() => {
+        if (mode === 'create') {
+            setPost({ title: '', content: '' });
+        }
+    }, [mode]);
 
     // 글 발행하기
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
