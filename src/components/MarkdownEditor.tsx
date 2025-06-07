@@ -46,15 +46,19 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
     const [isPublishing, setIsPublishing] = useState(false); // ✅ 발행 중 여부
     const [open, setOpen] = useState(false);
     const [warningText, setWarningText] = useState("");
-    const [isEditing, setIsEditing] = useState(false);
-    const blocker = useBlocker(() => isEditing);
+    // const [isEditing, setIsEditing] = useState(false);
+    // const blocker = useBlocker(() => isEditing);
+    const [isBlocking, setIsBlocking] = useState(false);
+    // post에 변경이 생기면 guard 작동 여부 true로 설정
+    useEffect(() => {
+        const hasChanges = post.title.trim() !== '' || post.content.trim() !== '';
+        setIsBlocking(hasChanges);
+    }, [post.title, post.content]);
 
     // 글 작성중 이탈 감지하여 경고하기
     // useBlocker + beforeunload  
-    useNavigationGuard(
-        post.title.trim() !== '' || post.content.trim() !== '',
-        '변경사항이 저장되지 않았습니다. 정말 떠나시겠습니까?'
-    );
+    useNavigationGuard(isBlocking, '변경사항이 저장되지 않았습니다. 정말 떠나시겠습니까?');
+
 
     const showWarning = (text: string) => {
         setWarningText(text);
@@ -116,6 +120,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
                 }
 
                 console.log("📢 게시글을 발행합니다!");
+                setIsBlocking(false);
                 const response = await axios("http://localhost:8080/api/posts", {
                     method: "post",
                     headers: { "Content-Type": "application/json" },
@@ -141,6 +146,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
                     return;
                 }
                 console.log("게시글 수정 완료");
+                setIsBlocking(false);
                 axios(`http://localhost:8080/api/posts/${postId}`, {
                     method: "put",
                     headers: { "Content-Type": "application/json" },
