@@ -9,7 +9,6 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-    AlertDialogTrigger,
 } from "@components/ui/alert-dialog"
 
 interface Post {
@@ -32,10 +31,12 @@ const DraftLoader = ({ onLoadDraft }: DraftProp) => {
                     console.log('임시저장 데이터', response)
                     setDraft(response.data)
                     setOpen(true); // 불러온 후 다이얼로그 열기
-
                 }
             })
-            .catch(error => console.error("❌ 임시 저장 불러오기 오류:", error));
+            .catch(error => {
+                console.error("❌ 임시 저장 불러오기 오류:", error)
+                alert("임시 저장된 글을 불러오는 데 실패했습니다. 다시 시도해주세요.")
+            });
     }, []);
 
     useEffect(() => {

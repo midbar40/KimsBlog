@@ -1,8 +1,6 @@
 import { useCallback, useEffect } from 'react';
-import {
-    useBeforeUnload,
-} from 'react-router-dom';
-import { useBlocker } from 'react-router'; // ❌ react-router-dom 아님
+import { useBeforeUnload } from 'react-router-dom';
+import { useBlocker } from 'react-router'; 
 
 export default function useNavigationGuard(shouldBlock: boolean, message: string) {
     const blocker = useBlocker(shouldBlock);

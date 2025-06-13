@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import DOMPurify from "dompurify";
 import { Button } from './ui/button';
 import { useNavigate } from "react-router";
-
+import { useAuth } from './AuthContext';
 
 interface Post {
     title: string,
@@ -18,6 +18,7 @@ const Post = () => {
     let navigate = useNavigate()
     const { id } = useParams();
     const [post, setPost] = useState<Post | null>(null);
+    const { user } = useAuth();
 
     // HTML sanitization을 위한 함수
     const sanitizeHTML = (html: string) => {
@@ -38,7 +39,14 @@ const Post = () => {
                     method: 'get',
                     headers: { "Content-Type": "application/json" }
                 })
-                setPost(response.data)
+                    .then(response => {
+                        setPost(response.data)
+                    })
+                    .catch(error => {
+                        console.error('post 가져오기 실패', error)
+                        alert("글을 불러오는 데 실패했습니다. 다시 시도해주세요.")
+                        navigate('/posts')
+                    })
             }
             getPost();
         }, [id])
@@ -48,17 +56,6 @@ const Post = () => {
         console.log('post 수정')
         // markdown입력에디터가 다시 활성화 되어야 한다
         navigate(`/posts/${id}/edit`)
-
-        // axios(`http://localhost:8080/api/posts/${id}`, {
-        //     method: "put",
-        //     headers: { "Content-Type": "application/json" },
-        //     data: post
-        // })
-        //     .then(response => {
-        //         console.log("✅ 수정완료:", response.data)
-        //         navigate(`/posts/${id}`)
-        //     })
-        //     .catch(error => console.error("❌ 수정오류:", error))
     }
 
     // 글 삭제하기
@@ -74,24 +71,29 @@ const Post = () => {
                     console.log("✅ 삭제완료:", response.data)
                     navigate('/posts')
                 })
-                .catch(error => console.error("❌ 삭제오류:", error))
+                .catch(error => {
+                    console.error("❌ 삭제오류:", error)
+                    alert("글 삭제에 실패했습니다. 다시 시도해주세요.")
+                })
         }
     }
 
     return (
-        <div className="max-w-3xl mx-10 px-4 py-8">
+        <div className="lg:w-[70%] w-full m-auto mt-5 border-t border-stone-300 p-10">
             <header className="mb-8">
-                <h1 className="text-4xl font-bold mb-2">{post?.title}</h1>
+                <h1 className="font-serif text-[25px] font-semibold mb-2">{post?.title}</h1>
                 <p className="text-sm text-muted-foreground">{formatDate(post?.updatedAt!)}</p>
             </header>
 
             <article className="prose prose-lg dark:prose-invert">
                 <ReactMarkdown>{sanitizeHTML(post?.content as string)}</ReactMarkdown>
             </article>
-            <div className='btn-group mt-6 flex gap-2'>
-                <Button variant="outline" className="text-sm text-muted-foreground hover:text-primary cursor-pointer" onClick={editPost}>수정</Button>
-                <Button variant="outline" className="text-sm text-muted-foreground hover:text-destructive cursor-pointer" onClick={deletePost}>삭제</Button>
-            </div>
+            {user?.role === 'ADMIN' && (
+                <div className='btn-group mt-6 flex gap-2'>
+                    <Button variant="outline" className="text-sm text-muted-foreground hover:text-primary cursor-pointer" onClick={editPost}>수정</Button>
+                    <Button variant="outline" className="text-sm text-muted-foreground hover:text-destructive cursor-pointer" onClick={deletePost}>삭제</Button>
+                </div>
+            )}
         </div>
     )
 }

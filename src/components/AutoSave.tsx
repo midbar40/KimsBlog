@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import axios from "axios";
-import { isPromise } from "util/types";
 
 interface Post {
     title: string;
@@ -23,8 +22,11 @@ const AutoSave = ({ post, isPublishing }: AutoSaveProp) => { //  content를 prop
                 headers: { "Content-Type": "application/json" },
                 data: postWithId
             })
-                .then(response => console.log("✅ 자동 저장됨:", response.data) )// 여기에 자동저장 되었을 때 나오는 알림 반응 추가 필요
-                .catch(error => console.error("❌ 저장 오류:", error));
+                .then(response => console.log("✅ 자동 저장됨:", response.data))
+                .catch(error => {
+                    console.error("❌ 저장 오류:", error)
+                    alert("글 자동 저장에 실패했습니다. 다시 시도해주세요.")
+                });
         }, 3000); // 3초 동안 입력이 없으면 저장
 
         return () => clearTimeout(timeoutId);

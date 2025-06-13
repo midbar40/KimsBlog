@@ -5,19 +5,21 @@ import {
   Route,
 } from 'react-router-dom';
 import Layout from './Layout';
-import Home from './components/Home';
-import MarkdownEditor from './components/MarkdownEditor';
-import Post from './components/Post';
-import PostList from './components/PostList';
+import { Home, MarkdownEditor, Post, PostList, Portfolio, NotFound, ErrorPage, Login, Signup, AdminRoute } from './components/index'
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route element={<Layout />}>
-      <Route path="/" element={<Home />} />
-      <Route path="/posts/edit" element={<MarkdownEditor mode="create" />} />
-      <Route path="/posts/:id/edit" element={<MarkdownEditor mode="edit" />} />
-      <Route path="/posts" element={<PostList />} />
-      <Route path="/posts/:id" element={<Post />} />
-    </Route>
+      <Route element={<Layout />} errorElement={<ErrorPage />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/posts/edit" element={<AdminRoute><MarkdownEditor mode="create" /></AdminRoute>} />
+        <Route path="/posts/:id/edit" element={<AdminRoute><MarkdownEditor mode="edit" /></AdminRoute>} />
+        <Route path="/posts" element={<PostList />} />
+        <Route path="/posts/:id" element={<Post />} />
+        <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="*" element={<NotFound />} />
+        <Route path="/error" element={<ErrorPage />} />
+      </Route>
   )
 );

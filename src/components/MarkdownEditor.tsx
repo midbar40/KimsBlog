@@ -20,12 +20,11 @@ import {
     AlertDialogFooter,
     AlertDialogTitle,
 } from "@components/ui/alert-dialog"
-import AutoSave from "./AutoSave";
-import DraftLoader from "./DraftLoader";
-import { useNavigate, useParams, useBlocker, useBeforeUnload } from "react-router";
-import useNavigationGuard from "./useNavigationGuard";
+import { AutoSave, DraftLoader, useNavigationGuard } from './index'
+import { useNavigate, useParams } from "react-router";
 
 interface Post {
+    id?: number, // optional
     title: string,
     content: string
 }
@@ -46,9 +45,9 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
     const [isPublishing, setIsPublishing] = useState(false); // ✅ 발행 중 여부
     const [open, setOpen] = useState(false);
     const [warningText, setWarningText] = useState("");
-    // const [isEditing, setIsEditing] = useState(false);
-    // const blocker = useBlocker(() => isEditing);
     const [isBlocking, setIsBlocking] = useState(false);
+    const [isAutoSaveEnabled, setIsAutoSaveEnabled] = useState(false);
+
     // post에 변경이 생기면 guard 작동 여부 true로 설정
     useEffect(() => {
         const hasChanges = post.title.trim() !== '' || post.content.trim() !== '';
@@ -71,6 +70,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
             ...prevState,
             [name]: value
         }))
+        if (!isAutoSaveEnabled) setIsAutoSaveEnabled(true); // 최초 입력 시 자동 저장 켜기
     }
 
     // 작성 중 내용 화면 이탈시 경고 함수
@@ -92,7 +92,10 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
                         content: response.data?.content
                     })
                 })
-                .catch(error => console.log("[editPost] 게시글 불러오기 실패"))
+                .catch(error => {
+                    console.error("[editPost] 게시글 불러오기 실패", error)
+                    showWarning("게시글을 불러오는 데 실패했습니다. 다시 시도해주세요.");
+                })
         }
     }, [mode])
 
@@ -118,13 +121,15 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
                     showWarning("내용을 작성해주세요");
                     return;
                 }
-
                 console.log("📢 게시글을 발행합니다!");
+                const { id, ...postWithoutId } = post
+                console.log('postWithoutId', postWithoutId)
+
                 setIsBlocking(false);
                 const response = await axios("http://localhost:8080/api/posts", {
                     method: "post",
                     headers: { "Content-Type": "application/json" },
-                    data: post
+                    data: postWithoutId
                 })
                 setIsPublishing(true)
                 navigate(`/posts/${response.data.id}`)
@@ -156,7 +161,11 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
                         console.log("✅ 수정완료:", response.data)
                         navigate(`/posts/${postId}`)
                     })
-                    .catch(error => console.error("❌ 수정오류:", error))
+                    .catch(error => {
+                        console.error("❌ 수정오류:", error)
+                        showWarning("글 수정에 실패했습니다. 다시 시도해주세요.")
+                    }
+                    )
             }
         } catch (error) {
             console.log('글 발행에러:', error)
@@ -166,19 +175,19 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
 
     return (
         <>
-            <div className="w-full flex flex-col md:flex-row max-h-screen overflow-auto ">
+            <div className=" flex flex-col md:flex-row overflow-auto border-1">
                 {/* 글 작성 영역 */}
-                <div className="w-full md:w-1/2 overflow-auto ">
+                <div className="md:w-1/2 overflow-auto border-r">
                     {/* 카테고리 표시 */}
-                    <div className="mt-[10px] p-4 text-[12px]">
-                        <span>{`카테고리 > 카테고리 > 카테고리`}</span>
+                    <div className="p-4 text-[12px]">
+                        <span>{`카테고리 작업중`}</span>
                     </div>
                     <textarea
                         value={post.title}
                         name="title"
                         onChange={handlePostContent}
                         placeholder="제목"
-                        className="w-full p-4 border-b border-gray-300 resize-none overflow-hidden focus:outline-0"
+                        className="w-full px-4 py-3 resize-none overflow-hidden focus:outline-0 leading-tight font-semibold font-serif text-[25px]"
                         rows={1}
                         style={{ height: 'auto' }}
                         onInput={(e) => {
@@ -191,8 +200,8 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
                         value={post.content}
                         name="content"
                         onChange={handlePostContent}
-                        className="w-full p-4  resize-none overflow-hidden focus:outline-0"
-                        placeholder="마크다운으로 기록하기"
+                        className="w-full p-4 resize-none overflow-hidden focus:outline-0"
+                        placeholder="내용을 입력해주세요"
                         style={{
                             minHeight: '75vh',
                             overflowWrap: 'break-word',
@@ -259,14 +268,17 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
                     </div>
                 </div>
                 {/* 마크다운 작성글 미리보기 */}
-                <div className="w-full md:w-1/2 pt-5 border-1" style={{ minHeight: '80vh', overflowX: 'hidden' }}>
-                    <span className="text-[15px] font-serif pl-4">MarkDown Preview</span>
-                    <div className="preview mt-4 max-w-none pt-3 markdown">
-                        {/* ReactMarkdown을 JSX로 렌더링 */}
-                        <div className="border-b border-gray-300 h-[42px]">
-                            <span className="mb-3 pl-4">{post.title}</span>
+                <div className="w-full md:w-1/2 pt-5" style={{ minHeight: '80vh', overflowX: 'hidden' }}>
+                    <div >
+                        <span className="text-[15px] font-serif pl-4">MarkDown Preview</span>
+                        <div className="preview max-w-none markdown pb-4">
+                            {/* ReactMarkdown을 JSX로 렌더링 */}
+                            <div className="pt-4 pl-4 pr-4 pb-3 leading-tight overflow-hidden break-words font-semibold font-serif text-[25px]">
+                                <span>{post.title}</span>
+                            </div>
                         </div>
-                        <div className="p-5"
+                        <div
+                            className="pt-2 px-4"
                             style={{
                                 overflowWrap: 'break-word',
                                 wordBreak: 'break-word'
@@ -280,10 +292,14 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
                 </div>
             </div>
             {mode === 'create' && (
-                <>
-                    <DraftLoader onLoadDraft={(draft) => setPost(draft)} /> {/* ✅ 임시 저장 불러오기 */}
-                    <AutoSave post={post} isPublishing={isPublishing} />
-                </>
+                <DraftLoader onLoadDraft={(draft) => {
+                    setPost(draft)  // 임시 저장 불러오기 
+                    setIsAutoSaveEnabled(false) // 불러오자마자 자동 저장 잠시 꺼둠
+                }
+                } />
+            )}
+            {mode === 'create' && isAutoSaveEnabled && (
+                <AutoSave post={post} isPublishing={isPublishing} />
             )}
             <>
                 <AlertDialog open={open} onOpenChange={setOpen}>
