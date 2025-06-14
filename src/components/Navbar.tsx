@@ -1,9 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom"
 import YouTubePlayer from "./YouTubePlayer";
-import axios from "axios";
 import { useAuth } from '@components/AuthContext';
-
 
 // Menu items.
 const items = [
@@ -41,14 +39,19 @@ const Navbar = () => {
   const { isAuthenticated, user, logout, loading } = useAuth();
   let navigate = useNavigate();
 
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      console.log(`현재 로그인한 사용자: ${user.nickname} (${user.email})`);
+    }
+  }, [isAuthenticated, user]);
+
+
   const handleLogout = async () => {
     try {
-      const response = await axios.post('/logout', {}, { withCredentials: true });
-      if (response.status === 200) {
-        // 로그아웃 성공 시 처리 (예: 홈으로 리다이렉트)
-        console.log('로그아웃 성공');
-        navigate('/');
-      }
+      // AuthContext의 logout 함수 사용
+      await logout();
+      console.log('로그아웃 성공');
+      navigate('/');
     } catch (error) {
       console.error('로그아웃 실패:', error);
     }
@@ -59,8 +62,9 @@ const Navbar = () => {
   }
 
   if (loading) {
-    return <div>Loading...</div>; // 로딩 상태 처리
+    return <span className="hidden">Loading...</span>; // 로딩 상태 처리
   }
+
 
   return (
     <>
@@ -88,18 +92,19 @@ const Navbar = () => {
           ))}
 
         {/* 인증 상태에 따른 버튼 표시 */}
+        <YouTubePlayer />
         <div className="mb-5">
           {isAuthenticated ? (
             <div className="flex gap-4 items-center">
-              <span className="text-sm text-gray-600">
-                안녕하세요, {user?.nickname}님
-              </span>
               <button
                 onClick={handleLogout}
                 className="cursor-pointer transition-colors duration-200 text-gray-400 hover:text-black hover:font-semibold bg-transparent border-none p-0 text-sm sm:text-base font-inherit"
               >
                 Logout
               </button>
+              <span className="text-sm text-gray-600 ml-20">
+                안녕하세요, {user?.nickname}님
+              </span>
             </div>
           ) : (
             <button
@@ -111,12 +116,9 @@ const Navbar = () => {
           )}
         </div>
 
-        <YouTubePlayer />
       </div>
     </>
   );
 };
-
-
 
 export default Navbar
