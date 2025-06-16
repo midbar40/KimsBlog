@@ -33,24 +33,6 @@ interface AuthProviderProps {
 // axios 기본 설정
 axios.defaults.withCredentials = true;
 
-// // 쿠키 디버깅 헬퍼 함수
-// const debugCookies = () => {
-//     const cookies = document.cookie;
-//     console.log('🍪 All cookies:', cookies);
-    
-//     const jsessionId = cookies.match(/JSESSIONID=([^;]+)/)?.[1];
-//     console.log('🔑 JSESSIONID:', jsessionId || 'Not found');
-    
-//     // 쿠키 파싱
-//     const cookieArray = cookies.split(';').map(cookie => {
-//         const [name, value] = cookie.trim().split('=');
-//         return { name, value };
-//     });
-//     console.log('🍪 Parsed cookies:', cookieArray);
-    
-//     return { jsessionId, allCookies: cookies };
-// };
-
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState<User | null>(null);
@@ -81,11 +63,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                     withCredentials: config.withCredentials,
                     headers: config.headers
                 });
-                
-                // 쿠키 상태 로깅
-                // const { jsessionId, allCookies } = debugCookies();
-                // console.log('📤 Request cookies:', allCookies);
-                
+
+
                 return config;
             },
             (error) => Promise.reject(error)
@@ -103,12 +82,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             const response = await axios.get('http://localhost:8080/api/auth/status', {
                 withCredentials: true,
                 timeout: 10000,
-                // headers: {
-                //     'Cache-Control': 'no-cache',
-                //     'Pragma': 'no-cache',
-                //     'Accept': 'application/json',
-                //     'Content-Type': 'application/json'
-                // }
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
             });
 
             console.log('✅ Auth status response:', {
@@ -118,9 +97,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 requestUrl: response.config.url
             });
 
-            // 응답 후 쿠키 상태 확인
-            // const afterCookies = debugCookies();
-            // console.log('📋 Post-response cookie state:', afterCookies);
+
 
             if (response.data.authenticated === true && response.data.user) {
                 console.log('✅ Setting authenticated: true, user:', response.data.user);
@@ -134,8 +111,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         } catch (error) {
             console.error('❌ Auth status check failed:', error);
 
-            // 쿠키 상태 확인
-            // debugCookies();
+
 
             // 네트워크 에러이고 재시도 횟수가 3회 미만인 경우 재시도
             if (axios.isAxiosError(error) &&
@@ -178,7 +154,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         checkAuthStatus();
     }, []); // 컴포넌트 마운트 시에만 실행
 
-    
+
     // 로그인
     const login = async (email: string, password: string): Promise<boolean> => {
         try {
@@ -194,10 +170,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             });
 
             console.log('✅ Login response:', response.status, response.data);
-
-            // 로그인 후 쿠키 상태 확인
-            // const afterLoginCookies = debugCookies();
-            // console.log('🍪 Post-login cookies:', afterLoginCookies);
 
             if (response.status === 200 && response.data.user) {
                 console.log('✅ Setting user from login response:', response.data.user);
@@ -240,9 +212,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setIsAuthenticated(false);
             setUser(null);
             setLoading(false);
-            
-            // 로그아웃 후 쿠키 상태 확인
-            // debugCookies();
+
+
         }
     };
 

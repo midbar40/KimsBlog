@@ -26,6 +26,14 @@ const items = [
     requireAuth: true,
     adminOnly: true,
   },
+    {
+    index: 4,
+    title: "Quiz",
+    url: "/quiz",
+    // Quiz 페이지는 인증이 필요하지만 관리자 전용은 아님
+    requireAuth: true,
+    adminOnly: false,
+  },
   {
     index: 5,
     title: "Portfolio",
@@ -102,7 +110,7 @@ const Navbar = () => {
               >
                 Logout
               </button>
-              <span className="text-sm text-gray-600 ml-20">
+              <span className="text-sm text-gray-600 ml-30">
                 안녕하세요, {user?.nickname}님
               </span>
             </div>

@@ -103,7 +103,7 @@ const Login = () => {
                     <button 
                         type='submit' 
                         disabled={loading}
-                        className='w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:cursor-not-allowed disabled:transform-none'
+                        className='w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:cursor-not-allowed disabled:transform-none cursor-pointer'
                     >
                         {loading ? '로그인 중...' : '로그인'}
                     </button>
@@ -116,14 +116,16 @@ const Login = () => {
                     <button 
                         onClick={() => navigate('/signup')} 
                         disabled={loading}
-                        className='w-full bg-white hover:bg-gray-50 disabled:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg border-2 border-gray-300 hover:border-gray-400 disabled:border-gray-200 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:transform-none'
+                        className='w-full bg-white hover:bg-gray-50 disabled:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg border-2 border-gray-300 hover:border-gray-400 disabled:border-gray-200 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:transform-none cursor-pointer'
                     >
                         회원가입
                     </button>
                 </div>
 
                 <div className='mt-6 text-center'>
-                    <a href='#' className='text-sm text-blue-600 hover:text-blue-800 transition-colors duration-200'>
+                    <a href='#' className='text-sm text-blue-600 hover:text-blue-800 transition-colors duration-200 cursor-pointer'
+                    onClick={() => navigate('/forgot-password')}
+                    >
                         비밀번호를 잊으셨나요?
                     </a>
                 </div>

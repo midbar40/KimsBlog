@@ -78,7 +78,7 @@ function Signup() {
             .then((response) => {
                 console.log('회원가입 성공:', response.data);
                 alert('회원가입이 완료되었습니다.');
-                navigate('/');
+                navigate('/login');
             })
             .catch((error) => {
                 console.error('회원가입 실패:', error);
@@ -177,7 +177,7 @@ function Signup() {
 
                     <button 
                         type="submit"
-                        className='w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl'
+                        className='w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl cursor-pointer'
                     >
                         회원가입
                     </button>
@@ -189,7 +189,7 @@ function Signup() {
                     </p>
                     <button 
                         onClick={() => navigate('/login')}
-                        className='w-full bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg border-2 border-gray-300 hover:border-gray-400 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]'
+                        className='w-full bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg border-2 border-gray-300 hover:border-gray-400 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer'
                     >
                         로그인
                     </button>
