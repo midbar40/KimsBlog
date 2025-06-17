@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom"
-import YouTubePlayer from "./YouTubePlayer";
-import { useAuth } from '@components/AuthContext';
+import YouTubePlayer from "../function/YouTubePlayer";
+import { useAuth } from '@components/auth/AuthContext';
 
 // Menu items.
 const items = [

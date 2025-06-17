@@ -1,10 +1,11 @@
 // components/AdminRoute.tsx
-import { useAuth } from '@components/AuthContext';
+import { useAuth } from '@components/auth/AuthContext';
 import { Navigate } from 'react-router-dom';
 
 import React from 'react';
+import { User } from 'lucide-react';
 
-const AdminRoute: React.FC<React.PropsWithChildren> = ({ children }) => {
+const UserRoute: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { isAuthenticated, user, loading } = useAuth();
 
   if (loading) {
@@ -15,11 +16,11 @@ const AdminRoute: React.FC<React.PropsWithChildren> = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (user?.role !== 'ADMIN') {
+  if (user?.role !== 'USER' && user?.role !== 'ADMIN') {
     return <Navigate to="/" replace />; // 또는 권한 없음 페이지
   }
 
   return children;
 };
 
-export default AdminRoute;
+export default UserRoute;

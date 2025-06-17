@@ -3,10 +3,10 @@ import { useParams } from 'react-router-dom'
 import axios from 'axios';
 import ReactMarkdown from "react-markdown";
 import DOMPurify from "dompurify";
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import { useNavigate } from "react-router";
-import { useAuth } from './AuthContext';
-import CommentSection from './CommentSection';
+import { useAuth } from '../auth/AuthContext';
+import CommentSection from '../comment/CommentSection';
 
 interface Post {
     title: string,

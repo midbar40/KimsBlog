@@ -1,4 +1,4 @@
-import ScrollToTopBtn from "./ScrollToTopBtn";
+import ScrollToTopBtn from "../custom_ui/ScrollToTopBtn";
 
 
 const Portfolio = () => {

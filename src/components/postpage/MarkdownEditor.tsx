@@ -20,7 +20,7 @@ import {
     AlertDialogFooter,
     AlertDialogTitle,
 } from "@components/ui/alert-dialog"
-import { AutoSave, DraftLoader, useNavigationGuard } from './index'
+import { AutoSave, DraftLoader, useNavigationGuard } from '../index'
 import { useNavigate, useParams } from "react-router";
 
 interface Post {
