@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Clock, Plus, Play, CheckCircle, XCircle, Trophy, Users, BookOpen } from 'lucide-react';
 import axios from 'axios';
+import { API_URL } from '../../config/api';
 
 // API 서비스 함수들
-const API_BASE_URL = 'http://localhost:8080/api';
 
 const api = {
     // 퀴즈 관련 API
     getQuizzesByCategory: async () => {
-        const response = await axios.get(`${API_BASE_URL}/quiz/by-category`, {
+        const response = await axios.get(`${API_URL}/quiz/by-category`, {
             withCredentials: true
         });
         if (response.status !== 200) throw new Error('Failed to fetch quizzes');
@@ -16,7 +16,7 @@ const api = {
     },
     
     getRandomQuiz: async () => {
-        const response = await axios.get(`${API_BASE_URL}/quiz/random`, {
+        const response = await axios.get(`${API_URL}/quiz/random`, {
             withCredentials: true
         });
         if (response.status !== 200) throw new Error('Failed to fetch random quiz');
@@ -24,7 +24,7 @@ const api = {
     },
 
     getQuizForPlay: async (id: number) => {
-        const response = await axios.get(`${API_BASE_URL}/quiz/${id}/play`, {
+        const response = await axios.get(`${API_URL}/quiz/${id}/play`, {
             withCredentials: true
         });
         if (response.status !== 200) throw new Error('Failed to fetch quiz');
@@ -38,7 +38,7 @@ const api = {
         category: string;
         difficulty: string;
     }) => {
-        const response = await axios.post(`${API_BASE_URL}/quiz`, quizData, {
+        const response = await axios.post(`${API_URL}/quiz`, quizData, {
             withCredentials: true
         });
         if (response.status !== 201) throw new Error('Failed to create quiz');
@@ -46,7 +46,7 @@ const api = {
     },
     
     submitAnswer: async (answerData: { quizId: number; userAnswer: string; timeTaken: number }) => {
-        const response = await axios.post(`${API_BASE_URL}/quiz/submit`, answerData, {
+        const response = await axios.post(`${API_URL}/quiz/submit`, answerData, {
             withCredentials: true
         });
         if (response.status !== 200) throw new Error('Failed to submit answer');
@@ -55,7 +55,7 @@ const api = {
 
     // 통계 관련 API
     getUserStats: async () => {
-        const response = await axios.get(`${API_BASE_URL}/stats/me`, {
+        const response = await axios.get(`${API_URL}/stats/me`, {
             withCredentials: true
         });
         if (response.status !== 200) throw new Error('Failed to fetch user stats');
@@ -64,7 +64,7 @@ const api = {
     
     // 인증 관련 API
     getAuthStatus: async () => {
-        const response = await axios.get(`${API_BASE_URL}/auth/status`, {
+        const response = await axios.get(`${API_URL}/auth/status`, {
             withCredentials: true
         });
         if (response.status !== 200) throw new Error('Failed to check auth status');

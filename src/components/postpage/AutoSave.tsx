@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import axios from "axios";
+import { API_URL } from '../../config/api';
 
 interface Post {
     title: string;
@@ -17,7 +18,7 @@ const AutoSave = ({ post, isPublishing }: AutoSaveProp) => { //  content를 prop
 
         const timeoutId = setTimeout(() => {
             const postWithId = { ...post, id: 1 }; // ID 명시
-            axios("http://localhost:8080/api/temp-posts", {
+            axios(`${API_URL}/temp-posts`, {
                 method: "put",
                 headers: { "Content-Type": "application/json" },
                 data: postWithId

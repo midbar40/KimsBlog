@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import axios from 'axios'
+import { API_URL } from '../../config/api';
 
 const ResetPassword = () => {
     const [newPassword, setNewPassword] = useState('')
@@ -27,10 +29,12 @@ const ResetPassword = () => {
 
     const validateToken = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/password/validate-token?token=${encodeURIComponent(token!)}`)
-            const data = await response.json()
+            const response = await axios.get(`${API_URL}/password/validate-token`, {
+                params: { token: encodeURIComponent(token!) }
+            });
+            const data = response.data; 
 
-            if (response.ok && data.valid) {
+            if (response.status === 200 && data.valid) {
                 setTokenValid(true)
                 setMessage('')
             } else {
@@ -77,21 +81,19 @@ const ResetPassword = () => {
         setMessage('')
 
         try {
-            const response = await fetch('http://localhost:8080/api/password/reset', {
-                method: 'POST',
+            const response = await axios.post(`${API_URL}/password/reset`, {
+                token: token,
+                newPassword: newPassword,
+                confirmPassword: confirmPassword
+            }, {
                 headers: {
                     'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    token: token,
-                    newPassword: newPassword,
-                    confirmPassword: confirmPassword
-                }),
+                }
             })
 
-            const data = await response.json()
+            const data = response.data
 
-            if (response.ok && data.success) {
+            if (response.status === 200 && data.success) {
                 setMessage(data.message)
                 setIsSuccess(true)
                 setNewPassword('')

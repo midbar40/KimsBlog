@@ -3,6 +3,7 @@ import axios from 'axios';
 import { MessageCircle } from 'lucide-react';
 import CommentForm from './CommentForm'
 import CommentList from './CommentList'
+import { API_URL } from '../../config/api';
 
 export interface Comment {
     id: number;
@@ -27,7 +28,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
         const fetchComments = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get(`http://localhost:8080/api/posts/${postId}/comments`, {
+                const response = await axios.get(`${API_URL}/posts/${postId}/comments`, {
                     withCredentials: true,
                     timeout: 10000
                 });
@@ -53,7 +54,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     const handleAddComment = async (commentData: Omit<Comment, 'id' | 'timestamp' | 'replies'>) => {
         try {
             const response = await axios.post(
-                `http://localhost:8080/api/posts/${postId}/comments`, 
+                `${API_URL}/posts/${postId}/comments`,
                 commentData,
                 {
                     withCredentials: true,
@@ -106,7 +107,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     const handleEditComment = async (commentId: number, newContent: string, password: string) => {
         try {
             const response = await axios.put(
-                `http://localhost:8080/api/posts/${postId}/comments/${commentId}`, 
+                `${API_URL}/posts/${postId}/comments/${commentId}`,
                 {
                     content: newContent,
                     password: password
@@ -154,7 +155,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     const handleDeleteComment = async (commentId: number, password: string) => {
         try {
             await axios.delete(
-                `http://localhost:8080/api/posts/${postId}/comments/${commentId}`, 
+                `${API_URL}/posts/${postId}/comments/${commentId}`,
                 {
                     data: { password },
                     withCredentials: true,

@@ -10,6 +10,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@components/ui/alert-dialog"
+import { API_URL } from '../../config/api';
 
 interface Post {
     title: string;
@@ -25,7 +26,7 @@ const DraftLoader = ({ onLoadDraft }: DraftProp) => {
     const [open, setOpen] = useState(false); // 다이얼로그 열기 상태
 
     useEffect(() => {
-        axios.get("http://localhost:8080/api/temp-posts")
+        axios.get(`${API_URL}/temp-posts`)
             .then(response => {
                 if (response.data) {
                     console.log('임시저장 데이터', response)

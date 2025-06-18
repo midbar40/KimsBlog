@@ -22,6 +22,7 @@ import {
 } from "@components/ui/alert-dialog"
 import { AutoSave, DraftLoader, useNavigationGuard } from '../index'
 import { useNavigate, useParams } from "react-router";
+import { API_URL } from '../../config/api';
 
 interface Post {
     id?: number, // optional
@@ -84,7 +85,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
     // edit mode로 들어왔을 때 해당 게시글 정보를 서버에서 가져온다
     useEffect(() => {
         if (mode === 'edit' && postId) {
-            axios.get(`http://localhost:8080/api/posts/${postId}`)
+            axios.get(`${API_URL}/posts/${postId}`)
                 .then(response => {
                     console.log('response체크', response)
                     setPost({
@@ -126,7 +127,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
                 console.log('postWithoutId', postWithoutId)
 
                 setIsBlocking(false);
-                const response = await axios("http://localhost:8080/api/posts", {
+                const response = await axios(`${API_URL}/posts`, {
                     method: "post",
                     headers: { "Content-Type": "application/json" },
                     data: postWithoutId
@@ -140,7 +141,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
                 }
                 console.log("💾 게시글을 임시 저장합니다!");
                 const postWithId = { ...post, id: 1 }; // ID 명시
-                axios("http://localhost:8080/api/temp-posts", {
+                axios(`${API_URL}/temp-posts`, {
                     method: "put",
                     headers: { "Content-Type": "application/json" },
                     data: postWithId
@@ -152,7 +153,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ mode }) => {
                 }
                 console.log("게시글 수정 완료");
                 setIsBlocking(false);
-                axios(`http://localhost:8080/api/posts/${postId}`, {
+                axios(`${API_URL}/posts/${postId}`, {
                     method: "put",
                     headers: { "Content-Type": "application/json" },
                     data: post

@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import { API_URL } from '../../config/api';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('')
@@ -21,17 +23,17 @@ const ForgotPassword = () => {
         setMessage('')
 
         try {
-            const response = await fetch('http://localhost:8080/api/password/forgot', {
-                method: 'POST',
+            const response = await axios.post(`${API_URL}/password/forgot`, {
+                email
+            }, {
                 headers: {
                     'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email }),
+                }
             })
 
-            const data = await response.json()
+            const data = response.data
 
-            if (response.ok && data.success) {
+            if (response.status === 200 && data.success) {
                 setMessage(data.message)
                 setIsSuccess(true)
                 setEmail('')

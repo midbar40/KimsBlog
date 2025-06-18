@@ -7,6 +7,7 @@ import { Button } from '../ui/button';
 import { useNavigate } from "react-router";
 import { useAuth } from '../auth/AuthContext';
 import CommentSection from '../comment/CommentSection';
+import { API_URL } from '../../config/api';
 
 interface Post {
     title: string,
@@ -33,7 +34,7 @@ const Post = () => {
     // post 가져오기 
     useEffect(() => {
         const getPost = async () => {
-            const response = await axios(`http://localhost:8080/api/posts/${id}`, {
+            const response = await axios(`${API_URL}/posts/${id}`, {
                 method: 'get',
                 headers: { "Content-Type": "application/json" }
             })
@@ -61,7 +62,7 @@ const Post = () => {
         if (!deleteCheck) return
         else {
             console.log('post 삭제')
-            axios(`http://localhost:8080/api/posts/${id}`, {
+            axios(`${API_URL}/posts/${id}`, {
                 method: "delete",
             })
                 .then(response => {

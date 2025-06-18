@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card";
 import { useNavigate } from "react-router";
 import ScrollToTopBtn from '../custom_ui/ScrollToTopBtn';
-
+import { API_URL } from '../../config/api';
 
 type Post = {
     id: number;
@@ -40,7 +40,7 @@ function PostList() {
 
     useEffect(() => {
         const getPosts = async () => {
-            const response = await axios(`http://localhost:8080/api/posts/paged?page=${currentPage}&size=${size}`, {
+            const response = await axios(`${API_URL}/posts/paged?page=${currentPage}&size=${size}`, {
                 method: 'get',
                 headers: { "Content-Type": "application/json" }
             })

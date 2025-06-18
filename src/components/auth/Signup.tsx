@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../../config/api';
 
 // 입력값 타입 정의
 type FormData = {
@@ -70,7 +71,7 @@ function Signup() {
 
         // 서버 요청
         axios
-            .post('http://localhost:8080/api/signup', { email, password, nickname },
+            .post(`${API_URL}/signup`, { email, password, nickname },
                 {
                     withCredentials: true,
                     headers: { "Content-Type": "application/json" }

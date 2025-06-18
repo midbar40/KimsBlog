@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
+import { API_URL } from '../../config/api';
 
 interface User {
     email: string;
@@ -79,7 +80,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // 인증 상태 확인 함수
     const checkAuthStatus = async (retryCount = 0) => {
         try {
-            const response = await axios.get('http://localhost:8080/api/auth/status', {
+            const response = await axios.get(`${API_URL}/auth/status`, {
                 withCredentials: true,
                 timeout: 10000,
                 headers: {
@@ -161,7 +162,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             console.log('🔐 Attempting login with:', email);
             setLoading(true);
 
-            const response = await axios.post('http://localhost:8080/api/login', {
+            const response = await axios.post(`${API_URL}/login`, {
                 email,
                 password
             }, {
@@ -200,7 +201,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             console.log('🚪 Attempting logout...');
             setLoading(true);
 
-            await axios.post('http://localhost:8080/api/logout', {}, {
+            await axios.post(`${API_URL}/logout`, {}, {
                 withCredentials: true,
                 timeout: 5000
             });
