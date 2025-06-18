@@ -7,7 +7,7 @@ export default function ErrorPage() {
         // 라우터에서 발생한 에러 응답
         return (
             <div>
-                <div><img src="/public/img/system-error.svg" alt="Error page" className="w-150 h-150 mx-auto" /></div>
+                <div><img src="/img/system-error.svg" alt="Error page" className="w-150 h-150 mx-auto" /></div>
                 <div className='text-center pt-5'><span className='text-xl font-serif'>오류가 발생했습니다</span></div>
                 <p className="text-red-500">
                     {error.status} - {error.statusText}
@@ -19,7 +19,7 @@ export default function ErrorPage() {
     // 그 외 일반적인 자바스크립트 오류
     return (
         <div>
-            <div><img src="/public/img/system-error.svg" alt="Error page" className="w-150 h-150 mx-auto" /></div>
+            <div><img src="/img/system-error.svg" alt="Error page" className="w-150 h-150 mx-auto" /></div>
             <div className='text-center pt-5'><span className='text-xl font-serif'>예기치 못한 오류가 발생했습니다</span></div>
             <p className="text-gray-500">{(error as Error)?.message}</p>
         </div>

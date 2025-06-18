@@ -6,7 +6,7 @@ function ScrollToTopBtn() {
                 e.preventDefault()
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }}>
-            <img src="/public/img/uparrow.png" alt="up-arrow" className="w-full h-full" />
+            <img src="/img/uparrow.png" alt="up-arrow" className="w-full h-full" />
         </div>
     )
 }

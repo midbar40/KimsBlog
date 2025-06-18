@@ -24,7 +24,7 @@ export class ErrorBoundary extends React.Component<{ children: React.ReactNode }
     if (this.state.hasError) {
       return (
          <div>
-            <div><img src="/public/img/system-error.svg" alt="Error page" className="w-150 h-150 mx-auto" /></div>
+            <div><img src="/img/system-error.svg" alt="Error page" className="w-150 h-150 mx-auto" /></div>
             <div className='text-center pt-5'><span className='text-xl font-serif'>오류가 발생했습니다, 다시 시도해주세요.</span></div>
         </div>
       )
